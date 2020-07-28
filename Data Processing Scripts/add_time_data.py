@@ -1,3 +1,8 @@
+# This scripts add new columns 'day', and 'hour' to the dataset.
+# Often date and hour of a data point have strong relation with temperature, humidity, etc..
+# (For example, temperature is more likely to be lower during the winter)
+# To take their effects into account, our team decided to add them as new features.
+
 import pandas as pd
 from datetime import datetime
 
@@ -28,7 +33,7 @@ for day in days:
     if(doy > 365):
         doy -= 365
     day_of_years.append(doy)
-    
+
 # add day column
 dataset['day'] = day_of_years
 cols = dataset.columns.to_list()

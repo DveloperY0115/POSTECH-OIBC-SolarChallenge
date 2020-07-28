@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+# Codes below are for reading csv files containing weather data and energy production data and concatenate them.
+# Data that we downloaded from KMA website are monthly records so we had to merge them into one single file.
+# Also, for our convenience, we decided to make 'energy' variable as a column in our dataset(so we can simply load the whole data and slice them into X, and Y). 
+
 import pandas as pd
 import datetime
 from dateutil import tz
