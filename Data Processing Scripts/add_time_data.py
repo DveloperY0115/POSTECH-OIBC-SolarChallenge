@@ -1,20 +1,26 @@
-# This scripts add new columns 'day', and 'hour' to the dataset.
-# Often date and hour of a data point have strong relation with temperature, humidity, etc..
-# (For example, temperature is more likely to be lower during the winter)
-# To take their effects into account, our team decided to add them as new features.
-
 import pandas as pd
 from datetime import datetime
 
 # load original data
-data = pd.read_csv('Weather-Energy_rev_data.csv')
+data = pd.read_csv('../Data/ProductionData/Weather-Energy_rev_time_hourly_data.csv')
 dataset = data.loc[:,['temperature', 'wind_speed(m/s)', 'humidity(%)', 'solar_radiation(MJ/m^2)','energy']]
 dataset.index = data.loc[:, 'time']
 
+whole_data = pd.read_csv('../Data/ProductionData/Weather-Energy_rev_time_hourly_data.csv')
+whole_dataset = whole_data[['day', 'hour', 'temperature', 'wind_speed(m/s)', 'humidity(%)', 'solar_radiation(MJ/m^2)','energy', 'time']]
+
+whole_dataset
+
+data = pd.read_csv('../Data/ProductionData/KMA_July_hourly.csv')
+
+data
+
+dataset = data[['temperature', 'wind_speed(m/s)', 'humidity(%)', 'solar_radiation(MJ/m^2)','energy']]
+
 # get the datetime object for index
 days = []
-for date_time_str in dataset.index:
-    days.append(datetime.strptime(date_time_str, '%Y-%m-%d %H:%M'))
+for i in range(len(dataset)):
+    days.append(datetime.strptime(data['time'][i], '%Y.%m.%d %H:%M'))
 
 hours = []
 for day in days:
@@ -25,6 +31,12 @@ dataset['hour'] = hours
 
 last = datetime(2018,12,31)
 
+# add day column
+dataset['day'] = day_of_years
+cols = dataset.columns.to_list()
+cols = cols[-2:] + cols[:-2]
+dataset = dataset[cols]
+
 # calculate the day of year using last
 day_of_years = []
 for day in days:
@@ -34,14 +46,51 @@ for day in days:
         doy -= 365
     day_of_years.append(doy)
 
-# add day column
-dataset['day'] = day_of_years
-cols = dataset.columns.to_list()
-cols = cols[-2:] + cols[:-2]
+cols = dataset.columns.tolist()
+
+cols
+
+# +
+cols.remove('day')
+cols.remove('hour')
+
+
+cols.insert(0, 'day')
+cols.insert(1, 'hour')
+# -
+
 dataset = dataset[cols]
 
+whole_dataset
+
+dataset
+
+dates = list()
+
+for i in range(len(dataset)):
+    temp_date = datetime.strptime(whole_dataset['time'][i], '%Y.%m.%d %H:%M')
+    
+    dates.append(datetime.strftime(temp_date, '%Y-%m-%d %H:%M'))
 
 
+dates
 
+whole_dataset['time'] = dates
+
+whole_dataset
+
+whole_dataset.to_csv('../Data/ProductionData/Weather-Energy_rev_time_hourly_data.csv')
+
+dataset
+
+data_including_July = pd.concat([whole_dataset, dataset])
+
+data_including_July
+
+data_including_July = pd.read_csv('../Data/ProductionData/Weather-Energy_rev_time_hourly_data.csv')
+
+data_including_July = data_including_July.reset_index()
+
+data_including_July.to_csv('../Data/ProductionData/Weather-Energy_rev_time_hourly_data.csv')
 
 
